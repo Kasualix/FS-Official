@@ -1,16 +1,16 @@
 package com.vuzz.forgestory.api.plotter.js;
 
 import com.vuzz.forgestory.annotations.Documentate;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.contents.LiteralContents;
+import net.minecraft.world.entity.player.Player;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Util;
-import net.minecraft.util.text.StringTextComponent;
 
 public class PlayerJS implements JSResource {
 
-    private PlayerEntity player;
+    private Player player;
 
-    public PlayerJS(PlayerEntity player) {
+    public PlayerJS(Player player) {
         this.player = player;
     }
 
@@ -19,13 +19,13 @@ public class PlayerJS implements JSResource {
 
     @Documentate(desc = "Sends message to the player.")
     public PlayerJS sendMessage(String text) { 
-        player.sendMessage( new StringTextComponent(text), Util.NIL_UUID );
+        player.sendSystemMessage(MutableComponent.create(new LiteralContents(text)));
         return this;
     }
 
     @Documentate(desc = "Sets rotation of player head on X&Y / Pitch&Yaw.")
     public void setHeadRotation(float pitch, float yaw) {
-        player.xRot = pitch;
+        player.setXRot(pitch);
         player.yHeadRot = yaw;
     }
 

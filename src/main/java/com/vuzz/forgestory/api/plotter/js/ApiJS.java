@@ -1,18 +1,17 @@
 package com.vuzz.forgestory.api.plotter.js;
 
 import com.vuzz.forgestory.annotations.Documentate;
-
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.command.CommandSource;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class ApiJS implements JSResource {
@@ -35,18 +34,18 @@ public class ApiJS implements JSResource {
     }
 
     @Documentate(desc = "Executes command")
-    public int executeCommand(PlayerEntity player, String command) {
+    public int executeCommand(Player player, String command) {
         MinecraftServer server = player.level.getServer();
             if(server == null) return 0;
-        CommandSource source = server.createCommandSourceStack()
+        CommandSourceStack source = server.createCommandSourceStack()
             .withEntity(player)
             .withPermission(4);
-        return server.getCommands().performCommand(source, command);
+        return server.getCommands().performPrefixedCommand(source, command);
     }
 
     @Documentate(desc = "Executes command") 
     public int executeCommand(PlayerJS player, String command) { 
-        return executeCommand((PlayerEntity) player.getNative(), command); }
+        return executeCommand((Player) player.getNative(), command); }
 
     @Documentate(desc = "Creates BlockPos Class")
     public static BlockPos createBlockPos(double[] xyz) { return new BlockPos(xyz[0],xyz[1],xyz[2]);}

@@ -1,8 +1,5 @@
 package com.vuzz.forgestory.api.plotter.js;
 
-import java.util.HashMap;
-import java.util.function.Consumer;
-
 import com.vuzz.forgestory.annotations.Documentate;
 import com.vuzz.forgestory.api.plotter.js.ApiJS.CameraMode;
 import com.vuzz.forgestory.api.plotter.js.ApiJS.NpcBuilder;
@@ -14,15 +11,18 @@ import com.vuzz.forgestory.common.entity.Entities;
 import com.vuzz.forgestory.common.entity.NPCEntity;
 import com.vuzz.forgestory.common.networking.FadeScreenPacket;
 import com.vuzz.forgestory.common.networking.Networking;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.network.PacketDistributor;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.GameType;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.fml.network.PacketDistributor;
+import java.util.HashMap;
+import java.util.function.Consumer;
+
 
 public class SceneJS implements JSResource {
 
@@ -67,10 +67,10 @@ public class SceneJS implements JSResource {
     public void showFadeScreen(int time) { showFadeScreen(time,"FF000000"); }
 
     @Documentate(desc = "Creates an npc.")
-    public void createNpc(World world, NpcBuilder npc, double[] pos) {
+    public void createNpc(Level world, NpcBuilder npc, double[] pos) {
         EntityType<NPCEntity> npcReg = Entities.NPC.get();
-        NPCEntity npcEntity = (NPCEntity) npcReg.spawn((ServerWorld) world, ItemStack.EMPTY, null, new BlockPos(pos[0],pos[1],pos[2]), 
-            SpawnReason.EVENT, false, false);
+        NPCEntity npcEntity = (NPCEntity) npcReg.spawn((ServerLevel) world, ItemStack.EMPTY, null, new BlockPos(pos[0],pos[1],pos[2]),
+            MobSpawnType.EVENT, false, false);
         npcEntity.setTexturePath(npc.texturePath);
         npcEntity.setModelPath(npc.modelPath);
         npcEntity.setAnimationPath(npc.animationPath);
@@ -83,7 +83,7 @@ public class SceneJS implements JSResource {
 
     @Documentate(desc = "Creates an npc.")
     public void createNpc(WorldJS world, NpcBuilder npc, double[] pos)  {
-        createNpc((World) world.getNative(),npc,pos);                           }
+        createNpc((Level) world.getNative(),npc,pos);                           }
 
     @Documentate(desc = "Gets npc by its id.")
     public NpcJS getNpc(String id) {

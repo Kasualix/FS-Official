@@ -1,25 +1,22 @@
 package com.vuzz.forgestory.common.entity;
 
-import com.vuzz.forgestory.api.plotter.js.event.*;
-import com.vuzz.forgestory.api.plotter.js.event.npc.*;
+import com.mojang.math.Vector3d;
+import com.vuzz.forgestory.api.plotter.js.event.EventManager;
+import com.vuzz.forgestory.api.plotter.js.event.TickEvent;
+import com.vuzz.forgestory.api.plotter.js.event.npc.InteractionEvent;
 import com.vuzz.forgestory.common.items.ItemsFS;
 import com.vuzz.forgestory.common.networking.NBTBank;
-
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.pathfinding.GroundPathNavigator;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Hand;
-import net.minecraft.util.HandSide;
-import net.minecraft.util.NonNullList;
-import net.minecraft.world.World;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.IAnimationTickable;
 import software.bernie.geckolib3.core.PlayState;
@@ -29,10 +26,8 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.util.GeckoLibUtil;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.command.arguments.EntityAnchorArgument.Type;
 
-public class NPCEntity extends MobEntity implements IAnimatable,IAnimationTickable {
+public class NPCEntity extends Mob implements IAnimatable,IAnimationTickable {
 
     private AnimationFactory anFactory = GeckoLibUtil.createFactory(this);
 
@@ -46,10 +41,10 @@ public class NPCEntity extends MobEntity implements IAnimatable,IAnimationTickab
 
     public Entity focusedEntity;
 
-    public NPCEntity(EntityType<? extends MobEntity> type, World world) { super(type,world); }
+    public NPCEntity(EntityType<? extends Mob> type, Level world) { super(type,world); }
 
-    public static AttributeModifierMap.MutableAttribute genAttributes() {
-        return MobEntity.createMobAttributes()
+    public static AttributeSupplier.Builder genAttributes() {
+        return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH,20.0D)
                 .add(Attributes.ARMOR,4D)
                 .add(Attributes.ARMOR_TOUGHNESS,4D)
@@ -113,7 +108,7 @@ public class NPCEntity extends MobEntity implements IAnimatable,IAnimationTickab
     }
 
     @Override
-    public ActionResultType interactAt(PlayerEntity player, Vector3d vec, Hand hand) {
+    public ActionResultType interactAt(Player player, Vector3d vec, InteractionHand hand) {
         if(player.level.isClientSide) return super.interactAt(player,vec,hand);
         if(player.getItemInHand(hand).getItem() == ItemsFS.NPC_DELETER.get())
             remove();

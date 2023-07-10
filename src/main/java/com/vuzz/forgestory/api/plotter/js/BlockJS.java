@@ -1,30 +1,32 @@
 package com.vuzz.forgestory.api.plotter.js;
 
 import com.vuzz.forgestory.annotations.Documentate;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.registries.ForgeRegistries;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import java.util.Objects;
 
 public class BlockJS implements JSResource {
 
     public BlockState state;
     public Block block;
     public WorldJS world;
-    public World nativeWorld;
+    public Level nativeWorld;
     public BlockPos blockPos;
 
     public BlockJS(BlockState state, WorldJS world, BlockPos pos) {
         this.state = state;
         this.block = state.getBlock();
         this.world = world;
-        this.nativeWorld = (World) world.getNative();
+        this.nativeWorld = (Level) world.getNative();
         this.blockPos = pos;
     }
 
     @Documentate(desc = "Gets Block id (minecraft:stone)")
-    public String getId() { return block.getRegistryName().toString(); }
+    public String getId() { return Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(block)).toString(); }
 
     @Documentate(desc = "Returns block's BlockPos")
     public BlockPos getPosition() {return blockPos;}

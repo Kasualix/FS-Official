@@ -1,18 +1,19 @@
 package com.vuzz.forgestory.common.networking;
 
-import java.util.function.Supplier;
-
 import com.vuzz.forgestory.api.plotter.story.Root;
 import com.vuzz.forgestory.api.plotter.story.Story;
 import com.vuzz.forgestory.api.plotter.story.data.ActionPacketData;
 import com.vuzz.forgestory.api.plotter.story.instances.SceneInstance;
 import com.vuzz.forgestory.common.config.FSCommonConfig;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.contents.LiteralContents;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.network.NetworkEvent;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Util;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraftforge.fml.network.NetworkEvent;
+import java.util.Objects;
+import java.util.function.Supplier;
+
 
 public class ActionPacket {
     public boolean isKeyPressed;
@@ -28,12 +29,12 @@ public class ActionPacket {
         this.messageChatted = messageChatted;
     }
 
-    public ActionPacket(PacketBuffer buffer) {
+    public ActionPacket(FriendlyByteBuf buffer) {
         isKeyPressed = buffer.readBoolean();
         messageChatted = buffer.readUtf();
     }
 
-    public void encode(PacketBuffer buffer) {
+    public void encode(FriendlyByteBuf buffer) {
         buffer.writeBoolean(isKeyPressed);
         buffer.writeUtf(messageChatted);
     }
@@ -41,15 +42,14 @@ public class ActionPacket {
     public void handle(Supplier<NetworkEvent.Context> context) {
         context.get().enqueueWork(() -> {
             if(context.get().getSender() == null) return;
-            PlayerEntity sender = context.get().getSender();
+            Player sender = context.get().getSender();
             if(FSCommonConfig.DEBUG_MODE.get())
-                sender.sendMessage(
-                    new StringTextComponent(
-                        "ActionPacket received: "+messageChatted+" | "+isKeyPressed), 
-                    Util.NIL_UUID);
+                if (sender != null) {
+                    sender.sendSystemMessage(MutableComponent.create(new LiteralContents("ActionPacket received: "+messageChatted+" | "+isKeyPressed)));
+                }
             Story story = Root.getActiveStory();
                 if(story == null) return;
-            SceneInstance playerScene = story.getActiveSceneForPlayer(sender.getUUID());
+            SceneInstance playerScene = story.getActiveSceneForPlayer(Objects.requireNonNull(sender).getUUID());
                 if(playerScene == null) return;
             ActionPacketData packetData = new ActionPacketData();
                 packetData.messageSent = messageChatted;

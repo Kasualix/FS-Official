@@ -1,26 +1,29 @@
 buildscript {
     repositories {
         maven { url = 'https://maven.minecraftforge.net' }
+        maven { url = 'https://maven.parchmentmc.org' }
         mavenCentral()
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath 'org.parchmentmc:librarian:1.+'
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
+apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: 'maven-publish'
 
 version = '1.1'
 group = 'com.vuzz.forgestory' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'forgestory'
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
-    mappings channel: 'official', version: '1.16.5'
+    mappings channel: 'parchment', version: '2022.08.14-1.19.2'
     configurations {
         library
         implementation.extendsFrom library
@@ -80,9 +83,9 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.16.5-36.2.34'
-    library 'org.mozilla:rhino:1.7.14'
-    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.16.5:3.0.106')
+    minecraft 'net.minecraftforge:forge:1.19.2-43.2.14'
+    implementation 'org.mozilla:rhino:1.7.14'
+    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.19:3.1.40')
 }
 
 jar {

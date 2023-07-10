@@ -42,11 +42,11 @@ public class FSC {
     }
 
     public static String join(String[] array, String reg) {
-        String joined = "";
+        StringBuilder joined = new StringBuilder();
         for(String el : array) {
-            joined+=el+reg;
+            joined.append(el).append(reg);
         }
-        return joined;
+        return joined.toString();
     }
 
     public static String createMessage(String msg) {
@@ -57,7 +57,7 @@ public class FSC {
         System.out.println(createMessage(x));
     }
 
-    public static  enum FSError {
+    public enum FSError {
         ROOT("RootError"),
         STORY("StoryError"),
         SCENE("SceneError"),

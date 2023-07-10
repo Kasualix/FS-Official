@@ -1,8 +1,8 @@
 package com.vuzz.forgestory.common.networking;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 @SuppressWarnings("all")
 public class ClientProxy implements IProxy {
@@ -13,12 +13,12 @@ public class ClientProxy implements IProxy {
     }
 
     @Override
-    public PlayerEntity getPlayer() {
+    public Player getPlayer() {
         return getMinecraft().player;
     }
 
     @Override
-    public World getWorld() {
+    public Level getWorld() {
         return getMinecraft().level;
     }
     

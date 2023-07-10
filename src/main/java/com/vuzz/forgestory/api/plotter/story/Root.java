@@ -1,5 +1,12 @@
 package com.vuzz.forgestory.api.plotter.story;
 
+import com.vuzz.forgestory.FSC;
+import com.vuzz.forgestory.api.plotter.story.data.*;
+import com.vuzz.forgestory.api.plotter.util.FileManager;
+import com.vuzz.forgestory.api.plotter.util.Filters;
+import net.minecraft.world.level.storage.LevelResource;
+import net.minecraftforge.server.ServerLifecycleHooks;
+
 import java.io.File;
 import java.io.OutputStreamWriter;
 import java.nio.file.Path;
@@ -7,17 +14,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
-import com.vuzz.forgestory.FSC;
-import com.vuzz.forgestory.api.plotter.story.data.FSData;
-import com.vuzz.forgestory.api.plotter.story.data.PackedLibData;
-import com.vuzz.forgestory.api.plotter.story.data.PackedScriptData;
-import com.vuzz.forgestory.api.plotter.story.data.PackedStoryData;
-import com.vuzz.forgestory.api.plotter.story.data.SceneJSON;
-import com.vuzz.forgestory.api.plotter.util.FileManager;
-import com.vuzz.forgestory.api.plotter.util.Filters;
-
-import net.minecraft.world.storage.FolderName;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 public class Root {
 
@@ -31,7 +27,7 @@ public class Root {
 
         storiesList.clear();
 
-        Path worldPath = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer()).getWorldPath(FolderName.ROOT);
+        Path worldPath = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer()).getWorldPath(LevelResource.ROOT);
         File worldFolder = worldPath.toFile();
         File storiesFolder = new File(worldFolder,"fs_stories");
              storiesFolder.mkdir();
@@ -53,7 +49,7 @@ public class Root {
     }
 
     public static void buildStory(Story story) {
-        Path worldPath = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer()).getWorldPath(FolderName.ROOT);
+        Path worldPath = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer()).getWorldPath(LevelResource.ROOT);
         File worldFolder = worldPath.toFile();
         File buildFolder = new File(worldFolder,"fs_builds");
              buildFolder.mkdir();
@@ -75,7 +71,7 @@ public class Root {
     }
 
     public static void unbuildStory(File f) {try {
-        Path worldPath = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer()).getWorldPath(FolderName.ROOT);
+        Path worldPath = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer()).getWorldPath(LevelResource.ROOT);
         File worldFolder = worldPath.toFile();
         File storiesFolder = new File(worldFolder,"fs_stories");
              storiesFolder.mkdir();
@@ -141,7 +137,7 @@ public class Root {
     }
 
     public static FSData getRootData() {
-        Path worldPath = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer()).getWorldPath(FolderName.ROOT);
+        Path worldPath = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer()).getWorldPath(LevelResource.ROOT);
         File worldFolder = worldPath.toFile();
         File fsDataFile = new File(worldFolder, "forgestory.json");
         try {
@@ -153,7 +149,7 @@ public class Root {
     }
 
     public static void writeRootData(FSData data) {
-        Path worldPath = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer()).getWorldPath(FolderName.ROOT);
+        Path worldPath = Objects.requireNonNull(ServerLifecycleHooks.getCurrentServer()).getWorldPath(LevelResource.ROOT);
         File worldFolder = worldPath.toFile();
         File fsDataFile = new File(worldFolder, "forgestory.json");
         FileManager.javaToJson(fsDataFile, data);

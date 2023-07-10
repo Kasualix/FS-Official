@@ -1,8 +1,7 @@
 package com.vuzz.forgestory.client.model.entity;
 
 import com.vuzz.forgestory.common.entity.NPCEntity;
-
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.processor.IBone;
 import software.bernie.geckolib3.model.AnimatedTickingGeoModel;
@@ -11,21 +10,21 @@ import software.bernie.geckolib3.model.provider.data.EntityModelData;
 public class NPCModel extends AnimatedTickingGeoModel<NPCEntity> {
 
     @Override
-    public ResourceLocation getAnimationFileLocation(NPCEntity animatable) {
+    public ResourceLocation getAnimationResource(NPCEntity animatable) {
         String path = animatable.getPersistentData().getString("animPath");
         ResourceLocation animPath = parsePath(path == "" ? "forgestory:animations/npc.animation" : path);
         return animPath;
     }
 
     @Override
-    public ResourceLocation getModelLocation(NPCEntity object) {
+    public ResourceLocation getModelResource(NPCEntity object) {
         String path = object.getPersistentData().getString("modelPath");
         ResourceLocation modelPath = parsePath(path == "" ? "forgestory:geo/steve.geo" : path);
         return modelPath;
     }
 
     @Override
-    public ResourceLocation getTextureLocation(NPCEntity object) {
+    public ResourceLocation getTextureResource(NPCEntity object) {
         return new ResourceLocation("forgestory","textures/entity/npc.png");
     }
     
@@ -56,5 +55,4 @@ public class NPCModel extends AnimatedTickingGeoModel<NPCEntity> {
             e.printStackTrace();
         }
     }
-    
 }

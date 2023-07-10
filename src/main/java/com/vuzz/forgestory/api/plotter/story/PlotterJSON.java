@@ -1,13 +1,14 @@
 package com.vuzz.forgestory.api.plotter.story;
 
-import java.lang.reflect.Method;
-import java.util.HashMap;
 import com.vuzz.forgestory.annotations.MethodJSON;
 import com.vuzz.forgestory.api.plotter.story.instances.SceneInstance;
 import com.vuzz.forgestory.api.plotter.util.FileManager;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.contents.LiteralContents;
 
-import net.minecraft.util.Util;
-import net.minecraft.util.text.StringTextComponent;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+
 
 public class PlotterJSON {
 
@@ -29,8 +30,8 @@ public class PlotterJSON {
         String text = (String) FileManager.getSafely(data,"text","Hello World!");
         String color = (String) FileManager.getSafely(data, "color", "f");
         String message = "\u00A7"+color+"["+author+"]\u00A7r "+text;
-        StringTextComponent playerMessage = new StringTextComponent(message);
-        scene.getPlayer().sendMessage(playerMessage, Util.NIL_UUID);
+        LiteralContents playerMessage = new LiteralContents(message);
+        scene.getPlayer().sendSystemMessage(MutableComponent.create(playerMessage));
     }
 
     @MethodJSON(id = "placeholder")

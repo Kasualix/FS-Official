@@ -1,9 +1,9 @@
 package com.vuzz.forgestory.api.plotter.story;
 
-import java.util.function.Supplier;
-
 import com.vuzz.forgestory.annotations.Documentate;
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
+
+import java.util.function.Supplier;
 
 public class ActionEvent {
 

@@ -4,9 +4,9 @@ import com.vuzz.forgestory.annotations.Documentate;
 import com.vuzz.forgestory.api.plotter.js.event.EventManager;
 import com.vuzz.forgestory.common.entity.NPCEntity;
 
-import net.minecraft.entity.Entity;
 
 import com.vuzz.forgestory.common.networking.NBTBank;
+import net.minecraft.world.entity.Entity;
 
 public class NpcJS implements JSResource {
 
@@ -118,7 +118,7 @@ public class NpcJS implements JSResource {
 
     //Despawning
     @Documentate(desc = "Despawns/Removes npc from world.")
-    public void despawnSelf() { npc.remove(); }
+    public void despawnSelf() { npc.remove(Entity.RemovalReason.KILLED); }
 
     //JS
     @Override public Object getNative() { return npc; }

@@ -1,29 +1,28 @@
 package com.vuzz.forgestory.api.plotter.story.instances;
 
-import java.util.ArrayList;
-
-import com.vuzz.forgestory.api.plotter.js.JSResource;
 import com.vuzz.forgestory.api.plotter.js.ApiJS.CameraMode;
-import com.vuzz.forgestory.api.plotter.js.event.*;
-import com.vuzz.forgestory.api.plotter.story.Action;
-import com.vuzz.forgestory.api.plotter.story.ActionEvent;
-import com.vuzz.forgestory.api.plotter.story.PlotterEnvironment;
-import com.vuzz.forgestory.api.plotter.story.Scene;
-import com.vuzz.forgestory.api.plotter.story.Script;
+import com.vuzz.forgestory.api.plotter.js.JSResource;
+import com.vuzz.forgestory.api.plotter.js.event.EventManager;
+import com.vuzz.forgestory.api.plotter.js.event.MessageEvent;
+import com.vuzz.forgestory.api.plotter.js.event.TickEvent;
+import com.vuzz.forgestory.api.plotter.story.*;
 import com.vuzz.forgestory.api.plotter.story.ActionEvent.DelayActionEvent;
 import com.vuzz.forgestory.api.plotter.story.ActionEvent.MessageSentActionEvent;
 import com.vuzz.forgestory.api.plotter.story.ActionEvent.PositionedActionEvent;
 import com.vuzz.forgestory.api.plotter.story.data.ActionPacketData;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.contents.LiteralContents;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.GameType;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.Util;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.GameType;
+import java.util.ArrayList;
+import java.util.Objects;
+
 
 public class SceneInstance {
     
-    private final ServerPlayerEntity player;
+    private final ServerPlayer player;
     private final Scene sceneReg;
     public final EventManager eventManager = new EventManager();
 
@@ -36,7 +35,7 @@ public class SceneInstance {
     public boolean inCutscene = false;
     public CameraMode cutsceneCam = CameraMode.NIL();
 
-    public SceneInstance(Scene scene, ServerPlayerEntity player) {
+    public SceneInstance(Scene scene, ServerPlayer player) {
         this.player = player;
         this.sceneReg = scene;
         this.env = new PlotterEnvironment(player,this);
@@ -51,7 +50,7 @@ public class SceneInstance {
                 player.teleportToWithTicket(cutsceneCam.posX,cutsceneCam.posY,cutsceneCam.posZ);
             }
             if(cutsceneCam.type == "full" || cutsceneCam.type == "rot_only") {
-                player.xRot = (float) cutsceneCam.rotX;
+                player.setXRot((float) cutsceneCam.rotX);
                 player.yHeadRot = (float) 0;
                 player.yBodyRot = (float) cutsceneCam.rotY;
             }
@@ -117,7 +116,7 @@ public class SceneInstance {
                 action.getActionFunc().accept(data);
             } catch (Exception e) {
                 e.printStackTrace();
-                getPlayer().sendMessage(new StringTextComponent(e.getMessage()), Util.NIL_UUID);
+                getPlayer().sendSystemMessage(MutableComponent.create(new LiteralContents(e.getMessage())));
             }
             curActIndex++;
         }
@@ -136,12 +135,12 @@ public class SceneInstance {
     }
 
     public void applyActPacket(ActionPacketData data) { 
-        if(data.messageSent != "") signalMessageEvent(data.messageSent);
+        if(!Objects.equals(data.messageSent, "")) signalMessageEvent(data.messageSent);
         playAction(data); 
     }
 
     public PlotterEnvironment getEnvironment() { return env; }
     public Scene getScene() { return sceneReg; }
-    public ServerPlayerEntity getPlayer() { return player; }
+    public ServerPlayer getPlayer() { return player; }
 
 }

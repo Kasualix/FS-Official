@@ -1,27 +1,26 @@
 package com.vuzz.forgestory.api.plotter.js;
 
 import com.vuzz.forgestory.annotations.Documentate;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
 
 public class WorldJS implements JSResource {
 
-    private World world;
+    private Level world;
 
-    public WorldJS(World world) {
+    public WorldJS(Level world) {
         this.world = world;
     }
 
     public WorldJS(WorldJS world) {
-        this.world = (World) world.getNative();
+        this.world = (Level) world.getNative();
     }
 
     @Documentate(desc = "Places a block in the world")
-    public void setBlock(BlockState block, BlockPos pos) { world.setBlock(pos, block, Constants.BlockFlags.DEFAULT); }
+    public void setBlock(BlockState block, BlockPos pos) { world.setBlock(pos, block, Block.UPDATE_ALL); }
 
     @Documentate(desc = "Places a block in the world")
     public void setBlock(Block block, BlockPos pos) { setBlock(ApiJS.createBlockState(block),pos); }

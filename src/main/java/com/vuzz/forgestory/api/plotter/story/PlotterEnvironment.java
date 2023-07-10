@@ -6,7 +6,7 @@ import com.vuzz.forgestory.api.plotter.js.ApiJS.CameraMode;
 import com.vuzz.forgestory.api.plotter.js.event.EventManager;
 import com.vuzz.forgestory.api.plotter.story.instances.SceneInstance;
 
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 public class PlotterEnvironment extends Environment {
 
@@ -27,7 +27,7 @@ public class PlotterEnvironment extends Environment {
 
     public ApiJS api;
 
-    public PlotterEnvironment(ServerPlayerEntity player, SceneInstance inst) {
+    public PlotterEnvironment(ServerPlayer player, SceneInstance inst) {
         this.player = new PlayerJS(player);
         this.scene = new SceneJS(inst);
         this.story = inst.getScene().story;

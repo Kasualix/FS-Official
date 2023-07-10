@@ -1,13 +1,13 @@
 package com.vuzz.forgestory.common.items;
 
 import com.vuzz.forgestory.ForgeStory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.world.World;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.item.Rarity;
 import com.vuzz.forgestory.api.plotter.story.Root;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
 
 public class ModRefresherItem extends Item {
 
@@ -20,16 +20,14 @@ public class ModRefresherItem extends Item {
                         .tab(ForgeStory.MOD_TAB)
         );
     }
+
     @Override
-    public ActionResultType onItemUseFirst(ItemStack stack, ItemUseContext context) {
-        World level = context.getLevel();
-        if(!level.isClientSide) return onItemUseFirstServer(stack,context);
+    public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
+        Level level = context.getLevel();
+        if(!level.isClientSide) {
+            Root.reloadStories();
+            return InteractionResult.PASS;
+        }
         return super.onItemUseFirst(stack,context);
     }
-
-    protected ActionResultType onItemUseFirstServer(ItemStack stack, ItemUseContext context) {
-        Root.reloadStories();
-        return ActionResultType.PASS;
-    }
-
 }
