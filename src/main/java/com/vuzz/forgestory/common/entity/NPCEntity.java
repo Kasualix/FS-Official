@@ -1,22 +1,24 @@
 package com.vuzz.forgestory.common.entity;
 
-import com.mojang.math.Vector3d;
 import com.vuzz.forgestory.api.plotter.js.event.EventManager;
 import com.vuzz.forgestory.api.plotter.js.event.TickEvent;
 import com.vuzz.forgestory.api.plotter.js.event.npc.InteractionEvent;
 import com.vuzz.forgestory.common.items.ItemsFS;
 import com.vuzz.forgestory.common.networking.NBTBank;
+import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.IAnimationTickable;
 import software.bernie.geckolib3.core.PlayState;
@@ -61,7 +63,7 @@ public class NPCEntity extends Mob implements IAnimatable,IAnimationTickable {
         super.tick();
         if(level.isClientSide) return;
         evManager.runEvent("tick", new TickEvent(ticks));
-        GroundPathNavigator nav = (GroundPathNavigator) getNavigation();
+        GroundPathNavigation nav = (GroundPathNavigation) getNavigation();
             nav.setCanFloat(true);
             nav.setCanOpenDoors(true);
         if(ticks % 10 == 0) {
@@ -76,7 +78,7 @@ public class NPCEntity extends Mob implements IAnimatable,IAnimationTickable {
         double speed = getPersistentData().getDouble("gotos");
         nav.moveTo(goToX,goToY,goToZ,speed);
         if(focusedEntity != null) {
-            lookAt(Type.EYES,new Vector3d(focusedEntity.getX(),focusedEntity.getEyeY(),focusedEntity.getZ()));
+            lookAt(EntityAnchorArgument.Anchor.EYES,new Vec3(focusedEntity.getX(),focusedEntity.getEyeY(),focusedEntity.getZ()));
         }
         setNoGravity(getPersistentData().getBoolean("no_gravity"));
         ticks++;
@@ -108,10 +110,10 @@ public class NPCEntity extends Mob implements IAnimatable,IAnimationTickable {
     }
 
     @Override
-    public ActionResultType interactAt(Player player, Vector3d vec, InteractionHand hand) {
+    public @NotNull InteractionResult interactAt(Player player, @NotNull Vec3 vec, @NotNull InteractionHand hand) {
         if(player.level.isClientSide) return super.interactAt(player,vec,hand);
         if(player.getItemInHand(hand).getItem() == ItemsFS.NPC_DELETER.get())
-            remove();
+            remove(RemovalReason.KILLED);
         evManager.runEvent("interaction", new InteractionEvent(player, vec,hand,this));
         return super.interactAt(player,vec,hand);
     }
@@ -122,12 +124,12 @@ public class NPCEntity extends Mob implements IAnimatable,IAnimationTickable {
         String walkAnim = getPersistentData().getString("walkAnim");
         if (event.isMoving()) {
             AnimationBuilder def = new AnimationBuilder()
-                .loop(walkAnim == "" ? "animation.npc.walk" : walkAnim);
+                .loop(walkAnim.equals("") ? "animation.npc.walk" : walkAnim);
             event.getController().setAnimation(def);
             return PlayState.CONTINUE;
         }
         AnimationBuilder def = new AnimationBuilder()
-            .loop(idleAnim == "" ? "animation.npc.idle" : idleAnim);             
+            .loop(idleAnim.equals("") ? "animation.npc.idle" : idleAnim);
         event.getController().setAnimation(def);
         return PlayState.CONTINUE;
     }
@@ -135,7 +137,7 @@ public class NPCEntity extends Mob implements IAnimatable,IAnimationTickable {
     private <E extends IAnimatable> PlayState playOnceC(AnimationEvent<E> event) {
         event.getController().transitionLengthTicks = 15;
         String anim = getPersistentData().getString("a_playonce");
-        if(anim == "")
+        if(anim.equals(""))
             return PlayState.STOP;
         AnimationBuilder def = new AnimationBuilder().playOnce(anim);             
         event.getController().setAnimation(def);
@@ -145,7 +147,7 @@ public class NPCEntity extends Mob implements IAnimatable,IAnimationTickable {
     private <E extends IAnimatable> PlayState loopC(AnimationEvent<E> event) {
         event.getController().transitionLengthTicks = 15;
         String anim = getPersistentData().getString("a_loop");
-        if(anim == "")
+        if(anim.equals(""))
             return PlayState.STOP;
         AnimationBuilder def = new AnimationBuilder().loop(anim);             
         event.getController().setAnimation(def);
@@ -169,26 +171,25 @@ public class NPCEntity extends Mob implements IAnimatable,IAnimationTickable {
     public void flushOnClient() { nbtBank.flush(this); }
 
     @Override
-    public void setItemSlot(EquipmentSlotType arg0, ItemStack arg1) {
-        if(arg0 == EquipmentSlotType.MAINHAND) inventory.set(0, arg1);
-        if(arg0 == EquipmentSlotType.OFFHAND) inventory.set(1, arg1);
+    public void setItemSlot(@NotNull EquipmentSlot arg0, @NotNull ItemStack arg1) {
+        if(arg0 == EquipmentSlot.MAINHAND) inventory.set(0, arg1);
+        if(arg0 == EquipmentSlot.OFFHAND) inventory.set(1, arg1);
     }
 
     @Override
-    public ItemStack getItemBySlot(EquipmentSlotType arg0) {
-        if(arg0 == EquipmentSlotType.MAINHAND) return inventory.get(0);
-        if(arg0 == EquipmentSlotType.OFFHAND) return inventory.get(1);
+    public @NotNull ItemStack getItemBySlot(@NotNull EquipmentSlot arg0) {
+        if(arg0 == EquipmentSlot.MAINHAND) return inventory.get(0);
+        if(arg0 == EquipmentSlot.OFFHAND) return inventory.get(1);
         return ItemStack.EMPTY;
     }
 
     @Override public boolean isLeashed() { return false;}
-    @Override public boolean canChangeDimensions() {return true;}
     @Override public boolean removeWhenFarAway(double p_213397_1_) {return false;}
     @Override public boolean isPersistenceRequired() {return true;}
     @Override public AnimationFactory getFactory() { return this.anFactory; }
-    @Override protected GroundPathNavigator createNavigation(World world) { return new GroundPathNavigator(this,world); }
-    @Override public Iterable<ItemStack> getArmorSlots() { return armorInv; }
-    @Override public HandSide getMainArm() { return HandSide.RIGHT; }
+    @Override protected @NotNull GroundPathNavigation createNavigation(@NotNull Level world) { return new GroundPathNavigation(this,world); }
+    @Override public @NotNull Iterable<ItemStack> getArmorSlots() { return armorInv; }
+    @Override public @NotNull HumanoidArm getMainArm() { return HumanoidArm.RIGHT; }
 
     @Override
     public int tickTimer() {

@@ -14,7 +14,6 @@ public class FadeScreen extends ForgeGui {
         super(mc);
     }
 
-    @SuppressWarnings("all")
     public void renderFadeScreen(PoseStack stack, int ticksPassed, int col) {
         Minecraft mc = Minecraft.getInstance();
         int screenWidth = mc.getWindow().getGuiScaledWidth();
